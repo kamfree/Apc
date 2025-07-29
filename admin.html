@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Hotel Bladi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-bs-theme="dark">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card" style="width: 22rem;">
+            <div class="card-body text-center">
+                <h3 class="card-title mb-4"><i class="fas fa-hotel"></i> Hotel Bladi Admin</h3>
+                <form id="login-form">
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="Password">
+                        <label for="password">Password</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <div id="login-error" class="text-danger mt-2 d-none">Invalid password.</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="d-none">
+        <div class="d-flex">
+            <!-- Sidebar -->
+            <nav class="sidebar bg-dark vh-100 p-3">
+                <h4 class="text-white mb-4"><i class="fas fa-user-shield"></i> Admin</h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-target="dashboard" href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-target="hotels" href="#"><i class="fas fa-hotel"></i> Hotels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-target="bookings" href="#"><i class="fas fa-calendar-check"></i> Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-target="users" href="#"><i class="fas fa-users"></i> Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-target="settings" href="#"><i class="fas fa-cog"></i> Settings</a>
+                    </li>
+                     <li class="nav-item mt-auto">
+                        <a class="nav-link" id="logout-btn" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="main-content flex-grow-1 p-4">
+                <!-- Dashboard -->
+                <div id="dashboard" class="content-section">
+                    <h2>Dashboard</h2>
+                    <div class="row">
+                        <!-- Stat cards -->
+                    </div>
+                </div>
+
+                <!-- Hotel Management -->
+                <div id="hotels" class="content-section d-none">
+                    <h2>Hotel Management
+                        <button class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#addHotelModal">
+                            <i class="fas fa-plus"></i> Add Hotel
+                        </button>
+                    </h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Price</th>
+                                <th>Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hotel-table-body">
+                            <!-- JS-generated content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Other sections... -->
+                <div id="bookings" class="content-section d-none"><h2>Bookings (View Only)</h2></div>
+                <div id="users" class="content-section d-none"><h2>Users (View Only)</h2></div>
+                <div id="settings" class="content-section d-none"><h2>System Settings (UI Only)</h2></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Hotel Modal -->
+    <div class="modal fade" id="addHotelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="hotelModalTitle">Add New Hotel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hotel-form">
+                        <input type="hidden" id="hotel-id">
+                        <div class="mb-3">
+                            <label for="hotel-name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="hotel-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hotel-location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="hotel-location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hotel-price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="hotel-price" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="hotel-rating" class="form-label">Rating</label>
+                            <input type="number" class="form-control" id="hotel-rating" min="1" max="5" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hotel-image" class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="hotel-image" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hotel-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="hotel-description" rows="3"></textarea>
+                        </div>
+                         <div class="mb-3">
+                            <label for="hotel-amenities" class="form-label">Amenities (comma-separated)</label>
+                            <input type="text" class="form-control" id="hotel-amenities">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Hotel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toast-title">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-body">
+                This is a toast message.
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="data/database.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

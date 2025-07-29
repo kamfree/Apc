@@ -1,0 +1,109 @@
+/* General Styles */
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark Mode */
+[data-bs-theme="dark"] {
+    background-color: #212529;
+    color: #dee2e6;
+}
+[data-bs-theme="dark"] .bg-body-tertiary {
+    background-color: #343a40 !important;
+}
+[data-bs-theme="dark"] .card {
+    background-color: #343a40;
+    border-color: #495057;
+}
+[data-bs-theme="dark"] .form-control {
+    background-color: #495057;
+    border-color: #6c757d;
+    color: #f8f9fa;
+}
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: #adb5bd;
+}
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero-section {
+    background: url('https://picsum.photos/seed/bg/1600/400') no-repeat center center;
+    background-size: cover;
+    padding: 6rem 0;
+    position: relative;
+}
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+.hero-section .card {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+[data-bs-theme="light"] .hero-section .card {
+     background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Filters */
+.filter-card {
+    top: 20px;
+}
+
+/* Hotel Card */
+.hotel-card img {
+    height: 100%;
+    object-fit: cover;
+}
+
+/* RTL Support */
+[dir="rtl"] .ms-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+[dir="rtl"] .me-2 {
+    margin-left: .5rem !important;
+    margin-right: 0 !important;
+}
+[dir="rtl"] .float-end {
+    float: left !important;
+}
+
+
+/* Admin Panel */
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+.sidebar .nav-link {
+    color: #adb5bd;
+}
+.sidebar .nav-link.active, .sidebar .nav-link:hover {
+    color: #fff;
+    background-color: #495057;
+}
+.main-content {
+    min-height: 100vh;
+}
+#login-screen {
+    background-color: #212529;
+}
+[data-bs-theme="dark"] #login-screen .card{
+     background-color: #343a40;
+}
