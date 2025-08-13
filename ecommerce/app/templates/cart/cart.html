@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Cart</h2>
+<table class="table">
+  <thead>
+    <tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for item in items %}
+    <tr>
+      <td>{{ item.product.title }}</td>
+      <td>${{ '%.2f'|format(item.product.price) }}</td>
+      <td>
+        <form method="post" action="{{ url_for('cart.update_item', item_id=item.id) }}" class="d-flex">
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="0" class="form-control" style="width:100px;">
+          <button class="btn btn-sm btn-outline-secondary ms-2">Update</button>
+        </form>
+      </td>
+      <td>${{ '%.2f'|format(item.product.price * item.quantity) }}</td>
+      <td><a class="btn btn-sm btn-outline-danger" href="{{ url_for('cart.remove_item', item_id=item.id) }}">Remove</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="d-flex justify-content-between">
+  <a href="{{ url_for('shop.product_list') }}" class="btn btn-outline-secondary">Continue Shopping</a>
+  <div>
+    <strong>Subtotal: ${{ '%.2f'|format(subtotal) }}</strong>
+    <a href="{{ url_for('cart.checkout') }}" class="btn btn-primary ms-3">Checkout</a>
+  </div>
+</div>
+{% endblock %}

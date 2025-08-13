@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Vendor Dashboard</h2>
+<p><strong>Shop:</strong> {{ vendor.name }}</p>
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-bg-light mb-3"><div class="card-body"><h5>Total Sales</h5><p class="card-text">${{ '%.2f'|format(total_sales) }}</p></div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-bg-light mb-3"><div class="card-body"><h5>Items Sold</h5><p class="card-text">{{ total_items_sold }}</p></div></div>
+  </div>
+</div>
+<a class="btn btn-primary" href="{{ url_for('vendor.products') }}">Manage Products</a>
+<a class="btn btn-outline-secondary" href="{{ url_for('vendor.orders') }}">View Orders</a>
+{% endblock %}
