@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Your Products</h2>
+  <a href="{{ url_for('vendor.product_new') }}" class="btn btn-primary">Add Product</a>
+</div>
+<table class="table">
+  <thead><tr><th>Title</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+  <tbody>
+  {% for p in products %}
+    <tr>
+      <td>{{ p.title }}</td>
+      <td>${{ '%.2f'|format(p.price) }}</td>
+      <td>{{ p.stock }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('vendor.product_edit', product_id=p.id) }}">Edit</a>
+        <form method="post" action="{{ url_for('vendor.product_delete', product_id=p.id) }}" style="display:inline-block" onsubmit="return confirm('Delete product?')">
+          <button class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="fw-bold mb-3"><i class="bi bi-credit-card me-2"></i>Checkout</h2>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">{{ form.shipping_name.label }} {{ form.shipping_name(class_='form-control') }}</div>
+          <div class="mb-3">{{ form.shipping_address.label }} {{ form.shipping_address(class_='form-control') }}</div>
+          <div class="mb-3">{{ form.shipping_city.label }} {{ form.shipping_city(class_='form-control') }}</div>
+          <div class="mb-3">{{ form.shipping_postal_code.label }} {{ form.shipping_postal_code(class_='form-control') }}</div>
+          <div class="mb-3">{{ form.shipping_country.label }} {{ form.shipping_country(class_='form-control') }}</div>
+          {{ form.submit(class_='btn btn-primary btn-lg') }}
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Order Summary</h5>
+        <ul class="list-group mb-3">
+          {% for item in items %}
+          <li class="list-group-item d-flex justify-content-between lh-sm">
+            <div><h6 class="my-0">{{ item.product.title }} x {{ item.quantity }}</h6></div>
+            <span>${{ '%.2f'|format(item.product.price * item.quantity) }}</span>
+          </li>
+          {% endfor %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Total</span>
+            <strong>${{ '%.2f'|format(subtotal) }}</strong>
+          </li>
+        </ul>
+        <div class="alert alert-info mb-0"><i class="bi bi-shield-check me-1"></i> Payment simulation: clicking Place Order will simulate payment and create the order.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

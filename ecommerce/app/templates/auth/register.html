@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Register</h2>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">{{ form.name.label }} {{ form.name(class_='form-control') }}</div>
+  <div class="mb-3">{{ form.email.label }} {{ form.email(class_='form-control') }}</div>
+  <div class="mb-3">{{ form.password.label }} {{ form.password(class_='form-control') }}</div>
+  <div class="mb-3">{{ form.confirm_password.label }} {{ form.confirm_password(class_='form-control') }}</div>
+  <div class="form-check mb-3">{{ form.register_as_vendor(class_='form-check-input', id='reg_as_vendor') }} {{ form.register_as_vendor.label(class_='form-check-label') }}</div>
+  <div class="mb-3">{{ form.vendor_name.label }} {{ form.vendor_name(class_='form-control') }}</div>
+  {{ form.submit(class_='btn btn-primary') }}
+</form>
+{% endblock %}

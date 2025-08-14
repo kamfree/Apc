@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Products</h2>
+<table class="table">
+  <thead><tr><th>Title</th><th>Vendor</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead>
+  <tbody>
+  {% for p in products %}
+    <tr>
+      <td>{{ p.title }}</td>
+      <td>{{ p.vendor.name }}</td>
+      <td>{{ p.category.name if p.category else '' }}</td>
+      <td>${{ '%.2f'|format(p.price) }}</td>
+      <td>{{ p.stock }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

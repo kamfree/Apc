@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Orders</h2>
+<table class="table">
+  <thead><tr><th>Order ID</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+  <tbody>
+  {% for oi in order_items %}
+    <tr>
+      <td>{{ oi.order_id }}</td>
+      <td>{{ oi.product.title }}</td>
+      <td>{{ oi.quantity }}</td>
+      <td>${{ '%.2f'|format(oi.unit_price) }}</td>
+      <td>${{ '%.2f'|format(oi.unit_price * oi.quantity) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
