@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>حاسبة علمية احترافية</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --bg-panel: #ffffff;
+      --fg: #1f2937;
+      --muted: #6b7280;
+      --accent: #4f46e5;
+      --key-bg: #eef1f7;
+      --key-op: #e6e9f5;
+      --key-eq: #4f46e5;
+      --key-eq-fg: #ffffff;
+      --shadow: 0 10px 25px rgba(0,0,0,0.08);
+      --border: #e5e7eb;
+      --danger: #ef4444;
+      --success: #10b981;
+      --radius: 14px;
+    }
+    .theme-dark {
+      --bg: #0f172a;
+      --bg-panel: #0b1223;
+      --fg: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #8b5cf6;
+      --key-bg: #111827;
+      --key-op: #0f172a;
+      --key-eq: #8b5cf6;
+      --key-eq-fg: #ffffff;
+      --shadow: 0 10px 25px rgba(0,0,0,0.35);
+      --border: #1f2937;
+      --danger: #f87171;
+      --success: #34d399;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--fg);
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .calc-app {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      font-size: 20px;
+    }
+    .brand .tag {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--key-bg);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-panel);
+      color: var(--fg);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+      transition: transform 0.05s ease;
+    }
+    .toggle-btn:active { transform: scale(0.98); }
+    .toggle-btn .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 980px) {
+      .layout {
+        grid-template-columns: 3fr 1.2fr;
+      }
+    }
+
+    .display {
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(127,127,127,0.04) 100%);
+      border-radius: calc(var(--radius) - 6px);
+      padding: 12px;
+      border: 1px dashed var(--border);
+      margin-bottom: 12px;
+    }
+    .equation {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result {
+      font-weight: 700;
+      font-size: clamp(28px, 6vw, 44px);
+      min-height: 40px;
+      letter-spacing: 0.3px;
+      direction: ltr;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .key {
+      user-select: none;
+      border: none;
+      outline: none;
+      background: var(--key-bg);
+      color: var(--fg);
+      padding: 14px 10px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: filter 0.12s ease, transform 0.06s ease;
+    }
+    .key:active { transform: translateY(1px); }
+    .key.op { background: var(--key-op); }
+    .key.equal { background: var(--key-eq); color: var(--key-eq-fg); }
+    .key.wide-2 { grid-column: span 2; }
+    .key.wide-3 { grid-column: span 3; }
+
+    .history {
+      display: grid;
+      gap: 10px;
+      max-height: 560px;
+      overflow: auto;
+    }
+    .history h3 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .history .clear-history {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .history-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .history-item {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+    .history-item:hover { background: rgba(127,127,127,0.06); border-color: var(--accent); }
+    .history-item .expr { font-size: 12px; color: var(--muted); }
+    .history-item .res { font-size: 16px; font-weight: 700; }
+
+    .tips { color: var(--muted); font-size: 12px; }
+    .legend { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
+    .legend .pill { border: 1px dashed var(--border); padding: 3px 8px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+  <div id="root" class="calc-app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>حاسبة علمية</h1>
+        <span class="tag">Basic + Scientific</span>
+      </div>
+      <div class="controls">
+        <button id="angleToggle" class="toggle-btn" aria-label="تبديل الدرجات/الراديان">
+          <span class="dot"></span>
+          <span id="angleLabel">DEG</span>
+        </button>
+        <button id="themeToggle" class="toggle-btn" aria-label="تبديل الوضع الفاتح/الداكن">
+          <span class="dot"></span>
+          <span id="themeLabel">فاتح</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="display">
+          <div id="equation" class="equation"></div>
+          <div id="result" class="result" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="grid" id="keys">
+          <!-- Row 1 -->
+          <button class="key op" data-action="clear">C</button>
+          <button class="key op" data-action="backspace">←</button>
+          <button class="key op" data-insert="(">(</button>
+          <button class="key op" data-insert=")">)</button>
+          <button class="key op" data-insert="%">%</button>
+
+          <!-- Row 2 -->
+          <button class="key" data-insert="7">7</button>
+          <button class="key" data-insert="8">8</button>
+          <button class="key" data-insert="9">9</button>
+          <button class="key op" data-insert="÷">÷</button>
+          <button class="key op" data-func="sqrt">√</button>
+
+          <!-- Row 3 -->
+          <button class="key" data-insert="4">4</button>
+          <button class="key" data-insert="5">5</button>
+          <button class="key" data-insert="6">6</button>
+          <button class="key op" data-insert="×">×</button>
+          <button class="key op" data-func="cbrt">∛</button>
+
+          <!-- Row 4 -->
+          <button class="key" data-insert="1">1</button>
+          <button class="key" data-insert="2">2</button>
+          <button class="key" data-insert="3">3</button>
+          <button class="key op" data-insert="−">−</button>
+          <button class="key op" data-insert="^">x^y</button>
+
+          <!-- Row 5 -->
+          <button class="key" data-insert="0">0</button>
+          <button class="key" data-insert="," data-alt=".">.</button>
+          <button class="key op" data-action="toggle-sign">±</button>
+          <button class="key op" data-insert="+">+</button>
+          <button class="key op" data-insert="!">!</button>
+
+          <!-- Row 6 -->
+          <button class="key op" data-const="pi">π</button>
+          <button class="key op" data-const="e">e</button>
+          <button class="key op" data-func="sin">sin</button>
+          <button class="key op" data-func="cos">cos</button>
+          <button class="key op" data-func="tan">tan</button>
+
+          <!-- Row 7 -->
+          <button class="key op" data-func="ln">ln</button>
+          <button class="key op" data-func="log">log</button>
+          <button class="key equal wide-3" data-action="equals">=</button>
+        </div>
+
+        <div class="tips" style="margin-top:10px;">
+          <div class="legend">
+            <span class="pill">Enter = يساوي</span>
+            <span class="pill">Backspace = حذف</span>
+            <span class="pill">Esc = مسح الكل</span>
+            <span class="pill">يدعم لوحة المفاتيح</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="history">
+          <h3>
+            السجل (آخر 10)
+            <button id="clearHistory" class="clear-history">مسح</button>
+          </h3>
+          <ul id="historyList" class="history-list"></ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Calculator state
+    const state = {
+      expression: "",
+      lastEquation: "",
+      angleMode: 'DEG', // or 'RAD'
+      theme: 'light',    // or 'dark'
+      history: []
+    };
+
+    // Local storage keys
+    const LS_KEYS = {
+      THEME: 'calc-theme',
+      ANGLE: 'calc-angle-mode',
+      HISTORY: 'calc-history'
+    };
+
+    // DOM elements
+    const rootEl = document.getElementById('root');
+    const equationEl = document.getElementById('equation');
+    const resultEl = document.getElementById('result');
+    const keysEl = document.getElementById('keys');
+    const angleToggleBtn = document.getElementById('angleToggle');
+    const angleLabel = document.getElementById('angleLabel');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeLabel = document.getElementById('themeLabel');
+    const historyListEl = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistory');
+
+    // Initialization
+    init();
+
+    function init() {
+      // Restore settings
+      const storedTheme = localStorage.getItem(LS_KEYS.THEME);
+      if (storedTheme === 'dark') setTheme('dark');
+      else setTheme('light');
+
+      const storedAngle = localStorage.getItem(LS_KEYS.ANGLE);
+      if (storedAngle === 'RAD') setAngleMode('RAD');
+      else setAngleMode('DEG');
+
+      const storedHistory = safeJSONParse(localStorage.getItem(LS_KEYS.HISTORY), []);
+      state.history = Array.isArray(storedHistory) ? storedHistory.slice(0, 10) : [];
+      renderHistory();
+
+      // Event listeners
+      keysEl.addEventListener('click', onKeyClick);
+      angleToggleBtn.addEventListener('click', () => setAngleMode(state.angleMode === 'DEG' ? 'RAD' : 'DEG'));
+      themeToggleBtn.addEventListener('click', () => setTheme(state.theme === 'light' ? 'dark' : 'light'));
+      clearHistoryBtn.addEventListener('click', clearHistory);
+      document.addEventListener('keydown', onKeyDown);
+
+      updateDisplays();
+    }
+
+    // UI update helpers
+    function updateDisplays() {
+      equationEl.textContent = state.lastEquation;
+      resultEl.textContent = state.expression || '0';
+    }
+
+    function setAngleMode(mode) {
+      state.angleMode = (mode === 'RAD') ? 'RAD' : 'DEG';
+      angleLabel.textContent = state.angleMode;
+      localStorage.setItem(LS_KEYS.ANGLE, state.angleMode);
+    }
+
+    function setTheme(theme) {
+      state.theme = (theme === 'dark') ? 'dark' : 'light';
+      const isDark = state.theme === 'dark';
+      document.documentElement.classList.toggle('theme-dark', isDark);
+      themeLabel.textContent = isDark ? 'داكن' : 'فاتح';
+      localStorage.setItem(LS_KEYS.THEME, state.theme);
+    }
+
+    function renderHistory() {
+      historyListEl.innerHTML = '';
+      state.history.forEach((item, idx) => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `<div class="expr">${escapeHTML(item.expr)}</div><div class="res">${escapeHTML(item.res)}</div>`;
+        li.addEventListener('click', () => {
+          state.expression = item.expr;
+          state.lastEquation = item.expr; // show equation on top
+          updateDisplays();
+        });
+        historyListEl.appendChild(li);
+      });
+    }
+
+    function clearHistory() {
+      state.history = [];
+      localStorage.setItem(LS_KEYS.HISTORY, JSON.stringify(state.history));
+      renderHistory();
+    }
+
+    function pushHistory(expr, res) {
+      state.history.unshift({ expr, res });
+      state.history = state.history.slice(0, 10);
+      localStorage.setItem(LS_KEYS.HISTORY, JSON.stringify(state.history));
+      renderHistory();
+    }
+
+    // Event handlers
+    function onKeyClick(e) {
+      const btn = e.target.closest('button.key');
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const insert = btn.dataset.insert;
+      const fn = btn.dataset.func;
+      const constant = btn.dataset.const;
+
+      if (action === 'clear') return clearAll();
+      if (action === 'backspace') return deleteLast();
+      if (action === 'equals') return evaluateAndShow();
+      if (action === 'toggle-sign') return toggleSign();
+
+      if (typeof insert !== 'undefined') return insertText(btn.dataset.alt || insert);
+      if (typeof fn !== 'undefined') return appendFunction(fn);
+      if (typeof constant !== 'undefined') return appendConstant(constant);
+    }
+
+    function onKeyDown(e) {
+      // Prevent browser navigating back on Backspace
+      if (e.key === 'Backspace') e.preventDefault();
+      if (e.key === 'Enter') e.preventDefault();
+
+      const key = e.key;
+
+      if (/^[0-9]$/.test(key)) {
+        insertText(key); return;
+      }
+
+      if (key === '.' || key === ',') { insertText('.'); return; }
+
+      if (key === '+') { insertText('+'); return; }
+      if (key === '-') { insertText('-'); return; }
+      if (key === '*') { insertText('×'); return; }
+      if (key === '/') { insertText('÷'); return; }
+      if (key === '^') { insertText('^'); return; }
+      if (key === '%') { insertText('%'); return; }
+
+      if (key === '(' || key === ')') { insertText(key); return; }
+
+      if (key === 'Enter') { evaluateAndShow(); return; }
+      if (key === 'Backspace') { deleteLast(); return; }
+      if (key === 'Escape') { clearAll(); return; }
+    }
+
+    // Editing helpers
+    function insertText(txt) {
+      // Normalize minus symbol from UI row to standard hyphen
+      if (txt === '−') txt = '-';
+      state.expression += txt;
+      updateDisplays();
+    }
+
+    function appendFunction(name) {
+      const fn = String(name).toLowerCase();
+      // Insert function with opening parenthesis
+      const map = { sin: 'sin(', cos: 'cos(', tan: 'tan(', ln: 'ln(', log: 'log(', sqrt: 'sqrt(', cbrt: 'cbrt(' };
+      const toInsert = map[fn] || (fn + '(');
+      state.expression += toInsert;
+      updateDisplays();
+    }
+
+    function appendConstant(name) {
+      if (name === 'pi') state.expression += 'π';
+      else if (name === 'e') state.expression += 'e';
+      updateDisplays();
+    }
+
+    function deleteLast() {
+      if (!state.expression) return;
+      state.expression = state.expression.slice(0, -1);
+      updateDisplays();
+    }
+
+    function clearAll() {
+      state.expression = '';
+      state.lastEquation = '';
+      updateDisplays();
+    }
+
+    function toggleSign() {
+      const expr = state.expression;
+      if (expr.length === 0) { state.expression = '-'; return updateDisplays(); }
+
+      const negWrappedMatch = expr.match(/^(.*)\+\(-([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)\)$/);
+      if (negWrappedMatch) {
+        // Unwrap the last wrapped negative number of the form +(-N)
+        state.expression = negWrappedMatch[1] + negWrappedMatch[2];
+        return updateDisplays();
+      }
+
+      const m = expr.match(/^(.*?)([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)$/);
+      if (m) {
+        const head = m[1];
+        const num = m[2];
+        // Toggle: if already negative in parentheses, remove, otherwise wrap
+        if (/\(\-\d/.test(expr.slice(-num.length - 2))) {
+          // simple fallback removal not robust; ignore for now
+        }
+        state.expression = head + '(-' + num + ')';
+        return updateDisplays();
+      }
+
+      // Fallback: prefix a minus for the next input
+      state.expression += '(-';
+      updateDisplays();
+    }
+
+    // Evaluation
+    function evaluateAndShow() {
+      const expr = state.expression;
+      if (!expr) return;
+      const { ok, value } = safeEvaluate(expr, state.angleMode);
+      if (!ok || !isFinite(value)) {
+        state.lastEquation = expr;
+        state.expression = 'خطأ';
+        updateDisplays();
+        // Keep error from propagating
+        setTimeout(() => { state.expression = ''; updateDisplays(); }, 900);
+        return;
+      }
+      const formatted = formatNumber(value);
+      state.lastEquation = expr;
+      state.expression = formatted;
+      pushHistory(expr, formatted);
+      updateDisplays();
+    }
+
+    function safeEvaluate(expr, angleMode) {
+      try {
+        const tokens = tokenize(normalizeSymbols(expr));
+        const rpn = toRPN(tokens);
+        const val = evalRPN(rpn, angleMode);
+        if (typeof val !== 'number' || Number.isNaN(val)) return { ok: false };
+        return { ok: true, value: val };
+      } catch (err) {
+        return { ok: false };
+      }
+    }
+
+    // Tokenizer
+    function normalizeSymbols(s) {
+      return s
+        .replace(/\s+/g, '')
+        .replace(/×/g, '*')
+        .replace(/[÷]/g, '/')
+        .replace(/[−]/g, '-')
+        .replace(/[π]/g, 'pi');
+    }
+
+    function tokenize(s) {
+      const tokens = [];
+      let i = 0;
+      let prevType = 'start';
+      while (i < s.length) {
+        const ch = s[i];
+
+        // Numbers, including decimals and scientific notation
+        if (isDigit(ch) || (ch === '.' && i + 1 < s.length && isDigit(s[i+1]))) {
+          let numStr = '';
+          let hasDot = false;
+          while (i < s.length) {
+            const c = s[i];
+            if (isDigit(c)) { numStr += c; i++; continue; }
+            if (c === '.' && !hasDot) { hasDot = true; numStr += c; i++; continue; }
+            if ((c === 'e' || c === 'E')) {
+              // possible scientific notation
+              const next = s[i+1];
+              const next2 = s[i+2];
+              if (isDigit(next) || ((next === '+' || next === '-') && isDigit(next2))) {
+                numStr += c; i++;
+                if (s[i] === '+' || s[i] === '-') { numStr += s[i]; i++; }
+                while (i < s.length && isDigit(s[i])) { numStr += s[i]; i++; }
+                break;
+              } else {
+                break;
+              }
+            }
+            break;
+          }
+          tokens.push({ type: 'number', value: parseFloat(numStr) });
+          prevType = 'number';
+          continue;
+        }
+
+        // Identifiers: functions or constants
+        if (isLetter(ch)) {
+          let id = '';
+          while (i < s.length && (isLetter(s[i]) || isDigit(s[i]))) {
+            id += s[i]; i++;
+          }
+          const lower = id.toLowerCase();
+          if (lower === 'pi') { tokens.push({ type: 'const', value: 'PI' }); prevType = 'const'; continue; }
+          if (lower === 'e') { tokens.push({ type: 'const', value: 'E' }); prevType = 'const'; continue; }
+          // Otherwise function name
+          tokens.push({ type: 'func', value: lower });
+          prevType = 'func';
+          continue;
+        }
+
+        // Parentheses
+        if (ch === '(') { tokens.push({ type: 'lparen', value: '(' }); i++; prevType = 'lparen'; continue; }
+        if (ch === ')') { tokens.push({ type: 'rparen', value: ')' }); i++; prevType = 'rparen'; continue; }
+
+        // Postfix operators
+        if (ch === '!') { tokens.push({ type: 'postfix', value: '!' }); i++; prevType = 'postfix'; continue; }
+        if (ch === '%') { tokens.push({ type: 'postfix', value: '%' }); i++; prevType = 'postfix'; continue; }
+
+        // Operators
+        if (ch === '+' || ch === '-' || ch === '*' || ch === '/' || ch === '^') {
+          if (ch === '+' && (prevType === 'start' || prevType === 'op' || prevType === 'lparen' || prevType === 'func')) {
+            // unary plus: ignore
+            i++; prevType = 'op'; continue;
+          }
+          if (ch === '-' && (prevType === 'start' || prevType === 'op' || prevType === 'lparen' || prevType === 'func')) {
+            tokens.push({ type: 'op', value: 'u-' }); i++; prevType = 'op'; continue;
+          }
+          tokens.push({ type: 'op', value: ch }); i++; prevType = 'op'; continue;
+        }
+
+        throw new Error('Unknown token: ' + ch);
+      }
+      return tokens;
+    }
+
+    function isDigit(c) { return c >= '0' && c <= '9'; }
+    function isLetter(c) { return (c.toLowerCase() !== c.toUpperCase()); }
+
+    // Shunting-yard to RPN
+    function toRPN(tokens) {
+      const output = [];
+      const ops = [];
+
+      const precedence = (op) => ({
+        '!': 5,
+        '%': 5,
+        'u-': 4,
+        '^': 3,
+        '*': 2,
+        '/': 2,
+        '+': 1,
+        '-': 1,
+      })[op] || 0;
+
+      const isRightAssoc = (op) => (op === '^' || op === 'u-');
+
+      for (let i = 0; i < tokens.length; i++) {
+        const t = tokens[i];
+        switch (t.type) {
+          case 'number':
+          case 'const':
+            output.push(t);
+            break;
+          case 'func':
+            ops.push(t);
+            break;
+          case 'postfix':
+            // Postfix applies to the last output
+            output.push(t);
+            break;
+          case 'op': {
+            const o1 = t.value;
+            while (ops.length) {
+              const top = ops[ops.length - 1];
+              if (top.type === 'op') {
+                const o2 = top.value;
+                const cond = (!isRightAssoc(o1) && precedence(o1) <= precedence(o2)) ||
+                             (isRightAssoc(o1) && precedence(o1) < precedence(o2));
+                if (cond) { output.push(ops.pop()); continue; }
+              } else if (top.type === 'func') {
+                output.push(ops.pop());
+                continue;
+              }
+              break;
+            }
+            ops.push(t);
+            break;
+          }
+          case 'lparen':
+            ops.push(t);
+            break;
+          case 'rparen':
+            while (ops.length && ops[ops.length - 1].type !== 'lparen') {
+              output.push(ops.pop());
+            }
+            if (!ops.length) throw new Error('Mismatched parentheses');
+            ops.pop(); // pop lparen
+            if (ops.length && ops[ops.length - 1].type === 'func') {
+              output.push(ops.pop());
+            }
+            break;
+        }
+      }
+
+      while (ops.length) {
+        const top = ops.pop();
+        if (top.type === 'lparen' || top.type === 'rparen') throw new Error('Mismatched parentheses');
+        output.push(top);
+      }
+
+      return output;
+    }
+
+    // Evaluate RPN
+    function evalRPN(rpn, angleMode) {
+      const stack = [];
+      for (let i = 0; i < rpn.length; i++) {
+        const t = rpn[i];
+        if (t.type === 'number') { stack.push(t.value); continue; }
+        if (t.type === 'const') {
+          if (t.value === 'PI') stack.push(Math.PI);
+          else if (t.value === 'E') stack.push(Math.E);
+          else throw new Error('Unknown const');
+          continue;
+        }
+        if (t.type === 'postfix') {
+          if (t.value === '!') { const a = stack.pop(); stack.push(factorial(a)); continue; }
+          if (t.value === '%') { const a = stack.pop(); stack.push(a / 100); continue; }
+          throw new Error('Unknown postfix');
+        }
+        if (t.type === 'op') {
+          if (t.value === 'u-') { const a = stack.pop(); stack.push(-a); continue; }
+          const b = stack.pop();
+          const a = stack.pop();
+          switch (t.value) {
+            case '+': stack.push(a + b); break;
+            case '-': stack.push(a - b); break;
+            case '*': stack.push(a * b); break;
+            case '/': stack.push(a / b); break;
+            case '^': stack.push(Math.pow(a, b)); break;
+            default: throw new Error('Unknown op');
+          }
+          continue;
+        }
+        if (t.type === 'func') {
+          const a = stack.pop();
+          switch (t.value) {
+            case 'sin': stack.push(trig(Math.sin, a, angleMode)); break;
+            case 'cos': stack.push(trig(Math.cos, a, angleMode)); break;
+            case 'tan': stack.push(trig(Math.tan, a, angleMode)); break;
+            case 'ln': stack.push(Math.log(a)); break;
+            case 'log': stack.push(Math.log10(a)); break;
+            case 'sqrt': stack.push(Math.sqrt(a)); break;
+            case 'cbrt': stack.push(Math.cbrt(a)); break;
+            default: throw new Error('Unknown func');
+          }
+          continue;
+        }
+        throw new Error('Bad token in RPN');
+      }
+      if (stack.length !== 1) throw new Error('Bad expression');
+      return stack[0];
+    }
+
+    // Math utilities
+    function factorial(n) {
+      if (!isFinite(n)) throw new Error('Invalid factorial');
+      if (n < 0) throw new Error('Invalid factorial');
+      if (Math.floor(n) !== n) throw new Error('Invalid factorial');
+      if (n > 170) return Infinity; // overflow to Infinity
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function trig(fn, value, mode) {
+      const rad = (mode === 'DEG') ? (value * Math.PI / 180) : value;
+      const out = fn(rad);
+      // Normalize -0 to 0
+      return Math.abs(out) < 1e-15 ? 0 : out;
+    }
+
+    function formatNumber(n) {
+      if (!isFinite(n)) return 'خطأ';
+      const abs = Math.abs(n);
+      if ((abs !== 0 && (abs < 1e-9 || abs >= 1e12))) {
+        return n.toExponential(10).replace(/\+?0*(?=e)/, '');
+      }
+      const fixed = n.toFixed(12);
+      return fixed.replace(/\.0+$/, '').replace(/\.(\d*?)0+$/, '.$1');
+    }
+
+    // Misc helpers
+    function safeJSONParse(s, fallback) {
+      try { return JSON.parse(s); } catch { return fallback; }
+    }
+    function escapeHTML(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
