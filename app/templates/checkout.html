@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6">Checkout</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Shipping Information -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Shipping Address</h2>
+            <form id="shipping-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700">Full Name</label>
+                    <input type="text" class="w-full mt-1 p-2 border rounded-md" placeholder="John Doe">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Address</label>
+                    <input type="text" class="w-full mt-1 p-2 border rounded-md" placeholder="123 Main St">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">City</label>
+                    <input type="text" class="w-full mt-1 p-2 border rounded-md" placeholder="Anytown">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label class="block text-gray-700">State</label>
+                        <input type="text" class="w-full mt-1 p-2 border rounded-md" placeholder="CA">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700">ZIP Code</label>
+                        <input type="text" class="w-full mt-1 p-2 border rounded-md" placeholder="12345">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div>
+            <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+            <div id="order-summary-container" class="bg-gray-50 p-4 rounded-md">
+                <p>Loading summary...</p>
+                <!-- Summary will be loaded via JS -->
+            </div>
+            <div class="mt-6">
+                <button id="place-order-btn" class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 text-lg font-bold">
+                    Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# <script src="{{ url_for('static', filename='js/checkout.js') }}"></script> #}
+<script>
+    // Placeholder logic for checkout page
+    document.addEventListener('DOMContentLoaded', function() {
+        const summaryContainer = document.getElementById('order-summary-container');
+        // In a real app, you'd fetch the cart again to build this summary.
+        summaryContainer.innerHTML = `
+            <div class="flex justify-between mb-2"><span>Subtotal</span><span>$XX.XX</span></div>
+            <div class="flex justify-between mb-2"><span>Shipping</span><span>$X.XX</span></div>
+            <div class="border-t mt-2 pt-2 flex justify-between font-bold"><span>Total</span><span>$XX.XX</span></div>
+        `;
+
+        document.getElementById('place-order-btn').addEventListener('click', () => {
+            alert('Checkout logic not fully implemented in this demo.');
+        });
+    });
+</script>
+{% endblock %}

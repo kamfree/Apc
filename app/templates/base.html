@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Flask E-commerce{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-gray-800">FlaskStore</a>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-gray-800">Home</a>
+                    <a href="/cart" class="text-gray-600 hover:text-gray-800">
+                        Cart <span id="cart-count" class="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 ml-1">0</span>
+                    </a>
+                    <div id="auth-links">
+                        <a href="/login" class="text-gray-600 hover:text-gray-800">Login</a>
+                        <a href="/register" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Register</a>
+                    </div>
+                    <div id="user-info" class="hidden">
+                        <span id="user-email" class="text-gray-600"></span>
+                        <a href="/dashboard" class="text-gray-600 hover:text-gray-800 ml-4">Dashboard</a>
+                        <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-4">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white mt-8 py-4">
+        <div class="container mx-auto px-6 text-center text-gray-600">
+            &copy; 2024 Flask E-commerce. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6">Your Shopping Cart</h1>
+    <div id="cart-container">
+        <!-- Cart items will be loaded here -->
+        <p>Loading your cart...</p>
+    </div>
+
+    <div id="cart-summary" class="mt-6 text-right">
+        <!-- Cart total will be loaded here -->
+    </div>
+
+    <div class="mt-6 text-right">
+        <a href="/checkout" id="checkout-btn" class="bg-green-500 text-white py-3 px-6 rounded-lg hover:bg-green-600 text-lg font-bold hidden">
+            Proceed to Checkout
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

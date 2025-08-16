@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+<div id="product-detail-container" class="bg-white p-8 rounded-lg shadow-md">
+    <!-- Product details will be loaded here by JavaScript -->
+    <p>Loading product details...</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Pass the product_id from Flask to JavaScript
+    const productId = {{ product_id }};
+</script>
+<script src="{{ url_for('static', filename='js/product_detail.js') }}"></script>
+{% endblock %}

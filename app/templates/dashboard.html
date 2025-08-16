@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+    <p class="text-gray-700">Welcome to your dashboard.</p>
+    <div id="dashboard-content" class="mt-6">
+        <p>This is a placeholder for your dashboard content. Based on your role (Customer, Vendor, or Admin), you would see different information here:</p>
+        <ul class="list-disc list-inside mt-4 space-y-2">
+            <li><strong>Customers:</strong> View your order history.</li>
+            <li><strong>Vendors:</strong> Manage your products and view your sales reports.</li>
+            <li><strong>Admins:</strong> Access site-wide management tools.</li>
+        </ul>
+        <p class="mt-4">In a real application, JavaScript would fetch data from the API based on your role and display it here.</p>
+    </div>
+</div>
+{% endblock %}
