@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Checkout</h1>
+<p class="text-sm text-gray-600 mb-4">This demo form assumes you already have a JWT in localStorage as access_token.</p>
+<form id="checkoutForm" class="grid gap-2 max-w-md" onsubmit="return checkout(event)">
+	<input name="full_name" placeholder="Full Name" class="border rounded px-2 py-1" required/>
+	<input name="line1" placeholder="Address Line 1" class="border rounded px-2 py-1" required/>
+	<input name="city" placeholder="City" class="border rounded px-2 py-1" required/>
+	<input name="postal_code" placeholder="Postal Code" class="border rounded px-2 py-1" required/>
+	<button class="px-3 py-2 bg-green-600 text-white rounded">Place Order</button>
+</form>
+<script>
+async function checkout(e){
+	e.preventDefault();
+	const f = e.target;
+	const payload = {
+		shipping_address: {full_name:f.full_name.value,line1:f.line1.value,city:f.city.value,postal_code:f.postal_code.value,country:'US'},
+		billing_address: {full_name:f.full_name.value,line1:f.line1.value,city:f.city.value,postal_code:f.postal_code.value,country:'US'}
+	};
+	const token = localStorage.getItem('access_token');
+	const res = await fetch('/api/orders/checkout', {method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`}, body:JSON.stringify(payload)});
+	if(res.ok){ const data = await res.json(); alert('Order placed #' + data.order.id); } else { alert('Failed'); }
+	return false;
+}
+</script>
+{% endblock %}

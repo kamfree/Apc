@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Cart</h1>
+<div class="mb-2">
+	<input id="sessionId" class="border rounded px-2 py-1" placeholder="Guest session id"/>
+	<button class="px-3 py-1 bg-blue-600 text-white rounded" onclick="loadCart()">Load</button>
+</div>
+<div id="cart"></div>
+<script>
+async function loadCart(){
+	const sessionId = document.getElementById('sessionId').value || 'guest-ui';
+	const res = await fetch(`/api/cart?session_id=${encodeURIComponent(sessionId)}`);
+	const data = await res.json();
+	const c = data.cart;
+	const container = document.getElementById('cart');
+	container.innerHTML = '';
+	if(!c.items.length){ container.textContent='Cart is empty'; return; }
+	for(const item of c.items){
+		const div = document.createElement('div');
+		div.className = 'bg-white border rounded p-3 mb-2 flex justify-between';
+		div.innerHTML = `<div>${item.variant?.name || 'Variant'} x ${item.quantity}</div><div>$${item.total_price.toFixed(2)}</div>`
+		container.appendChild(div);
+	}
+	const total = document.createElement('div');
+	total.className = 'text-right font-semibold mt-2';
+	total.textContent = `Subtotal: $${c.totals.subtotal.toFixed(2)}`;
+	container.appendChild(total);
+}
+</script>
+{% endblock %}
