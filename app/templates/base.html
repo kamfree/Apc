@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>{{ title or 'E-Commerce' }}</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+	<header class="bg-white border-b">
+		<div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+			<a href="/" class="text-xl font-semibold">Shop</a>
+			<nav class="space-x-4">
+				<a href="/categories" class="hover:text-blue-600">Categories</a>
+				<a href="/cart" class="hover:text-blue-600">Cart</a>
+				<a href="/dashboard" class="hover:text-blue-600">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main class="max-w-7xl mx-auto px-4 py-6">
+		{% block content %}{% endblock %}
+	</main>
+</body>
+</html>

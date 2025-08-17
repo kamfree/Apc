@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Product</h1>
+<div id="product"></div>
+<div class="mt-4 flex gap-2">
+	<input id="sessionId" class="border rounded px-2 py-1" placeholder="Guest session id (for guests)"/>
+	<input id="quantity" type="number" min="1" value="1" class="border rounded px-2 py-1"/>
+	<button class="px-3 py-1 bg-blue-600 text-white rounded" onclick="addToCart()">Add to Cart</button>
+</div>
+<script>
+const productId = {{ product_id }};
+let selectedVariantId = null;
+async function loadProduct(){
+	const res = await fetch(`/api/products/${productId}`);
+	const data = await res.json();
+	const p = data.product;
+	const container = document.getElementById('product');
+	container.innerHTML = `<div class='bg-white border rounded p-4'><div class='text-xl font-semibold mb-2'>${p.name}</div><p class='text-sm mb-2'>${p.description||''}</p><div class='text-lg font-medium'>$${p.price.toFixed(2)}</div></div>`;
+	if(p.variants && p.variants.length){
+		selectedVariantId = p.variants[0].id;
+	}
+}
+async function addToCart(){
+	const sessionId = document.getElementById('sessionId').value || 'guest-ui';
+	const qty = parseInt(document.getElementById('quantity').value||'1', 10);
+	const payload = { session_id: sessionId, variant_id: selectedVariantId, quantity: qty };
+	const res = await fetch('/api/cart/add', { method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+	if(res.ok){ alert('Added to cart'); } else { alert('Failed'); }
+}
+loadProduct();
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Categories</h1>
+<p class="mb-2 text-sm text-gray-600">This simple page lists products filtered by a category_id query param.</p>
+<div class="flex gap-2 mb-4">
+	<input id="categoryId" type="number" placeholder="Category ID" class="border rounded px-2 py-1"/>
+	<button class="px-3 py-1 bg-blue-600 text-white rounded" onclick="filterByCategory()">Filter</button>
+</div>
+<div id="products" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+<script>
+async function filterByCategory(){
+	const id = document.getElementById('categoryId').value;
+	const res = await fetch(`/api/products?category_id=${id}`);
+	const data = await res.json();
+	const container = document.getElementById('products');
+	container.innerHTML='';
+	for(const p of (data.items||[])){
+		const card = document.createElement('a');
+		card.href = `/product/${p.id}`;
+		card.className = 'block rounded border bg-white p-4 hover:shadow';
+		card.innerHTML = `<div class="font-semibold">${p.name}</div><div class="text-sm">$${p.price.toFixed(2)}</div>`;
+		container.appendChild(card);
+	}
+}
+</script>
+{% endblock %}

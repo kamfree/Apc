@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+<p class="text-sm text-gray-600 mb-2">Requires a vendor access token in localStorage as access_token.</p>
+<button class="px-3 py-1 bg-blue-600 text-white rounded" onclick="loadDashboard()">Load Vendor Dashboard</button>
+<pre id="out" class="mt-4 bg-white border rounded p-3 overflow-auto"></pre>
+<script>
+async function loadDashboard(){
+	const token = localStorage.getItem('access_token');
+	const res = await fetch('/api/vendor/dashboard', { headers: { 'Authorization': `Bearer ${token}` }});
+	const data = await res.json();
+	document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+{% endblock %}
