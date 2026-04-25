@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  name      String
+  role      String     @default("AGENT") // ADMIN, AGENT
+  auditLogs AuditLog[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Asset {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        String   // e.g., Shop, Land, Building
+  location    String
+  status      String   @default("AVAILABLE") // AVAILABLE, LEASED, MAINTENANCE
+  leases      Lease[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  email       String?
+  phone       String
+  address     String
+  type        String   @default("INDIVIDUAL") // INDIVIDUAL, BUSINESS
+  leases      Lease[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lease {
+  id         String    @id @default(uuid())
+  assetId    String
+  asset      Asset     @relation(fields: [assetId], references: [id])
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  amount     Float     // Monthly rental amount
+  status     String    @default("PENDING") // PENDING, ACTIVE, TERMINATED, EXPIRED
+  approvedBy String?
+  invoices   Invoice[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Invoice {
+  id        String    @id @default(uuid())
+  leaseId   String
+  lease     Lease     @relation(fields: [leaseId], references: [id])
+  amount    Float
+  dueDate   DateTime
+  status    String    @default("UNPAID") // UNPAID, PARTIAL, PAID, OVERDUE
+  payments  Payment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id])
+  amount      Float
+  paymentDate DateTime @default(now())
+  method      String   // CASH, CHECK, TRANSFER
+  reference   String?  // Check number or transaction ID
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   // CREATE, UPDATE, DELETE, APPROVE, PAY
+  entityName String   // Asset, Lease, etc.
+  entityId   String
+  changes    String?  // JSON string of changes
+  timestamp  DateTime @default(now())
+}
